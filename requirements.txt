@@ -1,0 +1,48 @@
+# Django Core Framework
+Django==4.2.7
+django-ninja==1.1.0
+
+# Database Support
+dj-database-url==2.1.0
+
+# Environment Variables
+python-decouple==3.8
+
+# Authentication & Authorization
+PyJWT==2.8.0
+django-cors-headers==4.3.1
+
+# Data Validation & Serialization
+pydantic==2.0.3  # Compatible with Python 3.8 and django-ninja 1.1.0
+pydantic_core==2.3.0
+annotated-types==0.7.0
+
+# Development Tools
+django-debug-toolbar==4.2.0
+django-extensions==3.2.3
+
+# Static Files
+whitenoise==6.6.0
+
+# Additional Dependencies
+asgiref==3.8.1
+sqlparse==0.5.3
+backports.zoneinfo==0.2.1  # For Python 3.8 compatibility
+
+# Email Validation
+email-validator==2.3.0
+idna==3.11
+
+# Redis Support (for caching/sessions)
+redis==5.0.1
+async-timeout==5.0.1
+
+# DNS Support
+dnspython==2.6.1
+
+# Timezone Support
+tzdata==2025.2
+typing_extensions==4.13.2
+
+# Image Processing (if needed for user avatars)
+pillow==10.4.0

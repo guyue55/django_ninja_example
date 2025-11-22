@@ -1,0 +1,120 @@
+# Docker Compose 配置
+# 用于开发环境的容器编排
+
+version: '3.8'
+
+services:
+  # PostgreSQL 数据库
+  db:
+    image: postgres:15-alpine
+    container_name: django_ninja_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: django_ninja_dev
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - django_ninja_network
+
+  # Redis 缓存
+  redis:
+    image: redis:7-alpine
+    container_name: django_ninja_redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - django_ninja_network
+
+  # Django Web 应用
+  web:
+    build:
+      context: ../..
+      dockerfile: deployments/docker/Dockerfile
+    container_name: django_ninja_web
+    restart: unless-stopped
+    environment:
+      - DEBUG=True
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/django_ninja_dev
+      - REDIS_URL=redis://redis:6379/1
+      - SECRET_KEY=your-secret-key-here-change-this-in-production
+      - ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0
+      - CORS_ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
+      - JWT_SECRET_KEY=your-jwt-secret-key-here-change-this-in-production
+    volumes:
+      - ../../media:/app/media
+      - ../../logs:/app/logs
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+    networks:
+      - django_ninja_network
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py collectstatic --noinput &&
+             python manage.py runserver 0.0.0.0:8000"
+
+  # Celery 任务队列（可选）
+  celery:
+    build:
+      context: ../..
+      dockerfile: deployments/docker/Dockerfile
+    container_name: django_ninja_celery
+    restart: unless-stopped
+    environment:
+      - DEBUG=True
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/django_ninja_dev
+      - REDIS_URL=redis://redis:6379/1
+      - SECRET_KEY=your-secret-key-here-change-this-in-production
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    volumes:
+      - ../../media:/app/media
+      - ../../logs:/app/logs
+    depends_on:
+      - db
+      - redis
+    networks:
+      - django_ninja_network
+    command: celery -A config worker -l info
+
+  # Celery Beat 定时任务（可选）
+  celery-beat:
+    build:
+      context: ../..
+      dockerfile: deployments/docker/Dockerfile
+    container_name: django_ninja_celery_beat
+    restart: unless-stopped
+    environment:
+      - DEBUG=True
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/django_ninja_dev
+      - REDIS_URL=redis://redis:6379/1
+      - SECRET_KEY=your-secret-key-here-change-this-in-production
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    volumes:
+      - ../../media:/app/media
+      - ../../logs:/app/logs
+    depends_on:
+      - db
+      - redis
+    networks:
+      - django_ninja_network
+    command: celery -A config beat -l info
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  django_ninja_network:
+    driver: bridge
