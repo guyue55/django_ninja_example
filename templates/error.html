@@ -1,0 +1,315 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ error_code }}错误 - Django Ninja Web应用{% endblock %}
+
+{% block content %}
+<div class="container d-flex align-items-center justify-content-center min-vh-100">
+    <div class="row justify-content-center w-100">
+        <div class="col-lg-6 col-md-8 text-center">
+                <div class="error-container" role="alert" aria-live="polite">
+                <!-- 错误代码 -->
+                <div class="error-code">{{ error_code }}</div>
+                
+                <!-- 错误图标 -->
+                <div class="error-icon mb-4">
+                    {% if error_code == '404' %}
+                        <i class="bi bi-search"></i>
+                    {% elif error_code == '500' %}
+                        <i class="bi bi-exclamation-triangle"></i>
+                    {% elif error_code == '403' %}
+                        <i class="bi bi-shield-x"></i>
+                    {% else %}
+                        <i class="bi bi-exclamation-circle"></i>
+                    {% endif %}
+                </div>
+                
+                <!-- 错误标题 -->
+                <h1 class="error-title mb-3">
+                    {% if error_code == '404' %}
+                        页面未找到
+                    {% elif error_code == '500' %}
+                        服务器错误
+                    {% elif error_code == '403' %}
+                        访问被拒绝
+                    {% else %}
+                        发生错误
+                    {% endif %}
+                </h1>
+                
+                <!-- 错误描述 -->
+                <p class="error-description mb-4">
+                    {{ error_message }}
+                </p>
+                
+                <!-- 操作建议 -->
+                <div class="error-suggestions mb-4">
+                    {% if error_code == '404' %}
+                        <p class="text-muted">
+                            您访问的页面可能已被删除、移动或暂时不可用。
+                        </p>
+                        <p class="text-muted">
+                            请检查网址是否正确，或使用搜索功能查找相关内容。
+                        </p>
+                    {% elif error_code == '500' %}
+                        <p class="text-muted">
+                            服务器遇到了意外情况，无法完成您的请求。
+                        </p>
+                        <p class="text-muted">
+                            我们的技术团队已收到通知，正在努力解决问题。
+                        </p>
+                    {% elif error_code == '403' %}
+                        <p class="text-muted">
+                            您没有权限访问此页面或执行此操作。
+                        </p>
+                        <p class="text-muted">
+                            请确认您已登录，或联系管理员获取相应权限。
+                        </p>
+                    {% else %}
+                        <p class="text-muted">
+                            处理您的请求时发生了意外错误。
+                        </p>
+                        <p class="text-muted">
+                            请稍后重试，或联系技术支持获取帮助。
+                        </p>
+                    {% endif %}
+                </div>
+                
+                <!-- 操作按钮 -->
+                <div class="error-actions">
+                    <a href="{% url 'web:home' %}" class="btn btn-primary btn-lg me-3">
+                        <i class="bi bi-house-door me-2"></i>
+                        返回首页
+                    </a>
+                    
+                    {% if request.user.is_authenticated %}
+                        <a href="{% url 'web:dashboard' %}" class="btn btn-outline-primary btn-lg">
+                            <i class="bi bi-speedometer2 me-2"></i>
+                            进入控制台
+                        </a>
+                    {% else %}
+                        <button onclick="history.back()" class="btn btn-outline-secondary btn-lg">
+                            <i class="bi bi-arrow-left me-2"></i>
+                            返回上一页
+                        </button>
+                    {% endif %}
+                </div>
+                
+                <!-- 搜索框（仅404页面） -->
+                {% if error_code == '404' %}
+                    <div class="error-search mt-4">
+                        <form class="d-flex" onsubmit="handleSearch(event)" aria-label="错误页搜索表单">
+                            <input type="text" class="form-control form-control-lg me-2" aria-label="搜索输入" 
+                                   placeholder="搜索您需要的内容..." id="searchInput">
+                            <button type="submit" class="btn btn-outline-primary btn-lg">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </form>
+                    </div>
+                {% endif %}
+                
+                <!-- 联系支持 -->
+                <div class="error-support mt-4" aria-label="联系支持">
+                    <p class="text-muted mb-2">如果问题持续存在，请联系我们：</p>
+                    <div class="support-links">
+                        <a href="mailto:support@djangoninja.com" class="text-decoration-none me-3">
+                            <i class="bi bi-envelope me-1"></i>
+                            support@djangoninja.com
+                        </a>
+                        <a href="#" class="text-decoration-none">
+                            <i class="bi bi-chat-dots me-1"></i>
+                            在线客服
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.error-container {
+    padding: 2rem;
+}
+
+.error-code {
+    font-size: 8rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #0d6efd, #0056b3);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+    line-height: 1;
+}
+
+.error-icon {
+    font-size: 4rem;
+    color: #6c757d;
+}
+
+.error-title {
+    color: #212529;
+    font-weight: 600;
+}
+
+.error-description {
+    font-size: 1.1rem;
+    color: #6c757d;
+}
+
+.error-suggestions {
+    font-size: 0.95rem;
+}
+
+.error-actions .btn {
+    min-width: 140px;
+}
+
+.error-search {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.support-links {
+    font-size: 0.9rem;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .error-code {
+        font-size: 6rem;
+    }
+    
+    .error-icon {
+        font-size: 3rem;
+    }
+    
+    .error-title {
+        font-size: 1.5rem;
+    }
+    
+    .error-actions .btn {
+        display: block;
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+    
+    .error-actions .btn:last-child {
+        margin-bottom: 0;
+    }
+}
+
+@media (max-width: 576px) {
+    .error-code {
+        font-size: 4rem;
+    }
+    
+    .error-icon {
+        font-size: 2rem;
+    }
+    
+    .error-container {
+        padding: 1rem;
+    }
+}
+
+/* 动画效果 */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.error-container > * {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.error-container > *:nth-child(1) { animation-delay: 0.1s; }
+.error-container > *:nth-child(2) { animation-delay: 0.2s; }
+.error-container > *:nth-child(3) { animation-delay: 0.3s; }
+.error-container > *:nth-child(4) { animation-delay: 0.4s; }
+.error-container > *:nth-child(5) { animation-delay: 0.5s; }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+/**
+ * 错误页面JavaScript
+ */
+
+/**
+ * 处理搜索功能（仅404页面）
+ */
+function handleSearch(event) {
+    event.preventDefault();
+    
+    const searchInput = document.getElementById('searchInput');
+    const query = searchInput.value.trim();
+    
+    if (query) {
+        // 这里可以添加搜索逻辑
+        showNotification(`搜索功能开发中，您搜索的是: "${query}"`, 'info');
+        console.log('搜索查询:', query);
+    }
+}
+
+/**
+ * 显示通知消息
+ */
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+    notification.style.cssText = 'top: 20px; right: 20px; z-index: 1050; min-width: 250px;';
+    notification.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // 自动移除
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.classList.remove('show');
+            setTimeout(() => notification.remove(), 150);
+        }
+    }, 3000);
+}
+
+/**
+ * 页面加载完成后的初始化
+ */
+document.addEventListener('DOMContentLoaded', function() {
+    console.log(`错误页面 ${'{{ error_code }}'} 已加载`);
+    
+    // 添加页面加载动画
+    const errorContainer = document.querySelector('.error-container');
+    if (errorContainer) {
+        errorContainer.style.opacity = '0';
+        setTimeout(() => {
+            errorContainer.style.transition = 'opacity 0.6s ease-out';
+            errorContainer.style.opacity = '1';
+        }, 100);
+    }
+    
+    // 自动重试机制（仅500错误）
+    const errorCode = "{{ error_code|default:'' }}";
+    if (errorCode === '500') {
+        setTimeout(() => {
+            if (confirm('是否尝试重新加载页面？')) {
+                window.location.reload();
+            }
+        }, 5000);
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,746 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}首页 - Django Ninja Web应用{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* 首页特定样式 */
+    .hero-section {
+        background: linear-gradient(135deg, #0d6efd 0%, #0056b3 100%);
+        color: white;
+        padding: 6rem 0 4rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" fill="white" opacity="0.1"><polygon points="0,0 1000,0 1000,100 0,80"/></svg>');
+        background-size: cover;
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 2;
+    }
+    
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        animation: fadeInUp 0.8s ease-out;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.25rem;
+        margin-bottom: 2rem;
+        opacity: 0.9;
+        animation: fadeInUp 0.8s ease-out 0.2s both;
+    }
+    
+    .hero-buttons {
+        animation: fadeInUp 0.8s ease-out 0.4s both;
+    }
+    
+    .btn-hero {
+        padding: 0.75rem 2rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 0.5rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+    
+    .btn-hero-primary {
+        background: white;
+        color: #0d6efd;
+        border: 2px solid white;
+    }
+    
+    .btn-hero-primary:hover {
+        background: transparent;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+    
+    .btn-hero-outline {
+        background: transparent;
+        color: white;
+        border: 2px solid white;
+        margin-left: 1rem;
+    }
+    
+    .btn-hero-outline:hover {
+        background: white;
+        color: #0d6efd;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+    
+    /* 特性区域 */
+    .features-section {
+        padding: 5rem 0;
+        background: #f8f9fa;
+    }
+    
+    .section-title {
+        text-align: center;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: #212529;
+    }
+    
+    .section-subtitle {
+        text-align: center;
+        font-size: 1.1rem;
+        color: #6c757d;
+        margin-bottom: 3rem;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .feature-card {
+        background: white;
+        border-radius: 1rem;
+        padding: 2rem;
+        text-align: center;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        height: 100%;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.15);
+    }
+    
+    .feature-icon {
+        width: 5rem;
+        height: 5rem;
+        background: linear-gradient(135deg, #0d6efd, #0056b3);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        font-size: 2rem;
+        box-shadow: 0 0.5rem 1rem rgba(13, 110, 253, 0.3);
+    }
+    
+    .feature-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: #212529;
+    }
+    
+    .feature-description {
+        color: #6c757d;
+        line-height: 1.6;
+        margin-bottom: 0;
+    }
+    
+    /* 统计数据区域 */
+    .stats-section {
+        padding: 4rem 0;
+        background: linear-gradient(135deg, #198754, #155724);
+        color: white;
+    }
+    
+    .stat-item {
+        text-align: center;
+        padding: 1rem;
+    }
+    
+    .stat-number {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+    
+    .stat-label {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        margin-bottom: 0;
+    }
+    
+    /* 技术栈区域 */
+    .tech-section {
+        padding: 5rem 0;
+        background: white;
+    }
+    
+    .tech-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 2rem;
+        margin-top: 3rem;
+    }
+    
+    .tech-item {
+        text-align: center;
+        padding: 2rem 1rem;
+        border-radius: 1rem;
+        background: #f8f9fa;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .tech-item:hover {
+        background: white;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+        transform: translateY(-5px);
+    }
+    
+    .tech-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        color: #0d6efd;
+    }
+    
+    .tech-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #212529;
+        margin-bottom: 0.5rem;
+    }
+    
+    .tech-version {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+    
+    /* CTA区域 */
+    .cta-section {
+        padding: 4rem 0;
+        background: linear-gradient(135deg, #495057, #343a40);
+        color: white;
+        text-align: center;
+    }
+    
+    .cta-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+    
+    .cta-subtitle {
+        font-size: 1.1rem;
+        margin-bottom: 2rem;
+        opacity: 0.9;
+    }
+    
+    .btn-cta {
+        padding: 0.75rem 2rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 0.5rem;
+        background: linear-gradient(135deg, #0d6efd, #0056b3);
+        color: white;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.3s ease;
+        border: none;
+    }
+    
+    .btn-cta:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        color: white;
+    }
+    
+    /* 响应式设计 */
+    @media (max-width: 768px) {
+        .hero-section {
+            padding: 5rem 0 3rem;
+        }
+        
+        .hero-title {
+            font-size: 2.5rem;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.1rem;
+        }
+        
+        .section-title {
+            font-size: 2rem;
+        }
+        
+        .features-section,
+        .tech-section {
+            padding: 3rem 0;
+        }
+        
+        .btn-hero {
+            display: block;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        .btn-hero-outline {
+            margin-left: 0;
+        }
+        
+        .tech-grid {
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .hero-title {
+            font-size: 2rem;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+        }
+        
+        .cta-title {
+            font-size: 1.75rem;
+        }
+    }
+    
+    /* 动画效果 */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .animate-on-scroll {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.6s ease;
+    }
+    
+    .animate-on-scroll.animated {
+        opacity: 1;
+        transform: translateY(0);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- 英雄区域 -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <div class="hero-content">
+                    <h1 class="hero-title">
+                        Django Ninja
+                        <span class="text-gradient">Web应用</span>
+                    </h1>
+                    <p class="hero-subtitle">
+                        基于Django 4.2和Django Ninja框架构建的现代化Web应用，
+                        提供高性能的API服务和优雅的用户界面体验。
+                    </p>
+                    <div class="hero-buttons">
+                        {% if not user.is_authenticated %}
+                            <a href="{% url 'web:login' %}" class="btn-hero btn-hero-primary">
+                                <i class="bi bi-box-arrow-in-right me-2"></i>
+                                立即开始
+                            </a>
+                            <a href="{% url 'web:register' %}" class="btn-hero btn-hero-outline">
+                                <i class="bi bi-person-plus me-2"></i>
+                                创建账户
+                            </a>
+                        {% else %}
+                            <a href="{% url 'web:dashboard' %}" class="btn-hero btn-hero-primary">
+                                <i class="bi bi-speedometer2 me-2"></i>
+                                进入控制台
+                            </a>
+                            <a href="#features" class="btn-hero btn-hero-outline">
+                                <i class="bi bi-stars me-2"></i>
+                                探索功能
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 特性区域 -->
+<section id="features" class="features-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <h2 class="section-title animate-on-scroll">核心功能特性</h2>
+                <p class="section-subtitle animate-on-scroll">
+                    Django Ninja Web应用提供了一系列强大的功能，帮助您快速构建现代化的Web应用
+                </p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon">
+                        <i class="bi bi-lightning-fill"></i>
+                    </div>
+                    <h4 class="feature-title">高性能API</h4>
+                    <p class="feature-description">
+                        基于Django Ninja框架，提供类型安全、高性能的RESTful API，
+                        支持异步处理和自动文档生成。
+                    </p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon">
+                        <i class="bi bi-shield-lock-fill"></i>
+                    </div>
+                    <h4 class="feature-title">安全认证</h4>
+                    <p class="feature-description">
+                        集成JWT令牌认证系统，支持访问令牌和刷新令牌，
+                        确保用户数据安全和会话管理。
+                    </p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon">
+                        <i class="bi bi-bootstrap-fill"></i>
+                    </div>
+                    <h4 class="feature-title">响应式设计</h4>
+                    <p class="feature-description">
+                        基于Bootstrap 5构建的现代化界面，完美适配各种设备，
+                        提供优秀的移动端和桌面端体验。
+                    </p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon">
+                        <i class="bi bi-code-slash"></i>
+                    </div>
+                    <h4 class="feature-title">代码规范</h4>
+                    <p class="feature-description">
+                        遵循Google Python Style Guide，代码结构清晰，
+                        注释详细，易于维护和扩展。
+                    </p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon">
+                        <i class="bi bi-gear-fill"></i>
+                    </div>
+                    <h4 class="feature-title">易于配置</h4>
+                    <p class="feature-description">
+                        灵活的配置系统，支持环境变量和多种部署方式，
+                        轻松适配不同的开发和生产环境。
+                    </p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon">
+                        <i class="bi bi-graph-up-arrow"></i>
+                    </div>
+                    <h4 class="feature-title">实时监控</h4>
+                    <p class="feature-description">
+                        集成调试工具和性能监控，实时查看API性能，
+                        快速定位和解决问题。
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 统计数据区域 -->
+<section class="stats-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-item animate-on-scroll">
+                    <span class="stat-number">99.9%</span>
+                    <p class="stat-label">系统可用性</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-item animate-on-scroll">
+                    <span class="stat-number">50ms</span>
+                    <p class="stat-label">平均响应时间</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-item animate-on-scroll">
+                    <span class="stat-number">10K+</span>
+                    <p class="stat-label">活跃用户</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-item animate-on-scroll">
+                    <span class="stat-number">24/7</span>
+                    <p class="stat-label">技术支持</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 技术栈区域 -->
+<section id="about" class="tech-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h2 class="section-title animate-on-scroll">技术栈</h2>
+                <p class="section-subtitle animate-on-scroll">
+                    基于现代化的技术栈构建，确保应用的性能、安全性和可维护性
+                </p>
+            </div>
+        </div>
+        
+        <div class="tech-grid">
+            <div class="tech-item animate-on-scroll">
+                <div class="tech-icon">
+                    <i class="bi bi-filetype-py"></i>
+                </div>
+                <h5 class="tech-name">Python</h5>
+                <p class="tech-version">3.8+</p>
+            </div>
+            
+            <div class="tech-item animate-on-scroll">
+                <div class="tech-icon">
+                    <i class="bi bi-diamond-fill"></i>
+                </div>
+                <h5 class="tech-name">Django</h5>
+                <p class="tech-version">4.2.7</p>
+            </div>
+            
+            <div class="tech-item animate-on-scroll">
+                <div class="tech-icon">
+                    <i class="bi bi-lightning-fill"></i>
+                </div>
+                <h5 class="tech-name">Django Ninja</h5>
+                <p class="tech-version">1.1.0</p>
+            </div>
+            
+            <div class="tech-item animate-on-scroll">
+                <div class="tech-icon">
+                    <i class="bi bi-bootstrap-fill"></i>
+                </div>
+                <h5 class="tech-name">Bootstrap</h5>
+                <p class="tech-version">5.3.2</p>
+            </div>
+            
+            <div class="tech-item animate-on-scroll">
+                <div class="tech-icon">
+                    <i class="bi bi-file-earmark-code"></i>
+                </div>
+                <h5 class="tech-name">Pydantic</h5>
+                <p class="tech-version">2.0.3</p>
+            </div>
+            
+            <div class="tech-item animate-on-scroll">
+                <div class="tech-icon">
+                    <i class="bi bi-key-fill"></i>
+                </div>
+                <h5 class="tech-name">PyJWT</h5>
+                <p class="tech-version">2.8.0</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA区域 -->
+<section class="cta-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <h2 class="cta-title animate-on-scroll">
+                    准备好开始了吗？
+                </h2>
+                <p class="cta-subtitle animate-on-scroll">
+                    立即体验Django Ninja Web应用的强大功能，构建您的下一个现代化Web项目
+                </p>
+                <div class="animate-on-scroll">
+                    {% if not user.is_authenticated %}
+                        <a href="{% url 'web:register' %}" class="btn-cta">
+                            <i class="bi bi-rocket-takeoff me-2"></i>
+                            免费注册
+                        </a>
+                    {% else %}
+                        <a href="{% url 'dashboard' %}" class="btn-cta">
+                            <i class="bi bi-speedometer2 me-2"></i>
+                            开始使用
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+/**
+ * 首页特定JavaScript
+ */
+
+/**
+ * 初始化滚动动画
+ */
+document.addEventListener('DOMContentLoaded', function() {
+    // 创建Intersection Observer用于滚动动画
+    if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animated');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        });
+        
+        // 观察所有需要动画的元素
+        const animatedElements = document.querySelectorAll('.animate-on-scroll');
+        animatedElements.forEach(element => {
+            observer.observe(element);
+        });
+    }
+    
+    // 平滑滚动到锚点
+    const anchorLinks = document.querySelectorAll('a[href^="#"]');
+    anchorLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href');
+            if (targetId !== '#') {
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            }
+        });
+    });
+    
+    // 导航栏滚动效果
+    const navbar = document.querySelector('.navbar');
+    if (navbar) {
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 100) {
+                navbar.classList.add('navbar-scrolled');
+            } else {
+                navbar.classList.remove('navbar-scrolled');
+            }
+        });
+    }
+    
+    // 数字动画效果
+    animateNumbers();
+});
+
+/**
+ * 数字动画效果
+ */
+function animateNumbers() {
+    const statNumbers = document.querySelectorAll('.stat-number');
+    
+    statNumbers.forEach(element => {
+        const finalText = element.textContent;
+        const hasPercentage = finalText.includes('%');
+        const hasMs = finalText.includes('ms');
+        const hasPlus = finalText.includes('+');
+        
+        let finalNumber = parseFloat(finalText.replace(/[^\d.]/g, ''));
+        if (isNaN(finalNumber)) return;
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateNumber(entry.target, 0, finalNumber, 2000, finalText);
+                    observer.unobserve(entry.target);
+                }
+            });
+        });
+        
+        observer.observe(element);
+    });
+}
+
+/**
+ * 数字动画
+ */
+function animateNumber(element, start, end, duration, finalText) {
+    const startTime = performance.now();
+    const isDecimal = end % 1 !== 0;
+    
+    function update(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        // 使用缓动函数
+        const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+        const current = start + (end - start) * easeOutQuart;
+        
+        let displayText;
+        if (isDecimal) {
+            displayText = current.toFixed(1);
+        } else {
+            displayText = Math.floor(current).toString();
+        }
+        
+        // 恢复原始文本的特殊字符
+        displayText = finalText.replace(/[\d.]+/, displayText);
+        element.textContent = displayText;
+        
+        if (progress < 1) {
+            requestAnimationFrame(update);
+        }
+    }
+    
+    requestAnimationFrame(update);
+}
+
+/**
+ * 添加导航栏滚动样式
+ */
+const style = document.createElement('style');
+style.textContent = `
+    .navbar-scrolled {
+        background: rgba(13, 110, 253, 0.95) !important;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+`;
+document.head.appendChild(style);
+</script>
+{% endblock %}

@@ -53,7 +53,7 @@ local_settings.py
 db.sqlite3
 db.sqlite3-journal
 media/
-staticfiles/
+# staticfiles/
 
 # Environment variables
 .env
@@ -88,8 +88,8 @@ logs/
 *.log
 
 # Static files
-static/
-staticfiles/
+# static/
+# staticfiles/
 
 # Media files
 media/
@@ -116,5 +116,5 @@ uploads/
 *.csr
 
 # Migration files (optional)
-# */migrations/*.py
-# !*/migrations/__init__.py
+*/migrations/*.py
+!*/migrations/__init__.py

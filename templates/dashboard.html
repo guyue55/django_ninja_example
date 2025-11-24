@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}控制台 - Django Ninja Web应用{% endblock %}
+
+{% block content %}
+<div class="container mt-5 pt-5">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">
+                <i class="bi bi-speedometer2 me-2"></i>
+                用户控制台
+            </h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'web:home' %}">首页</a></li>
+                    <li class="breadcrumb-item active">控制台</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+    
+    <div class="row g-4">
+        <!-- 用户信息卡片 -->
+        <div class="col-lg-4">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-person-circle me-2"></i>
+                        用户信息
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <div class="avatar-placeholder">
+                            <i class="bi bi-person-fill" style="font-size: 4rem; color: #6c757d;"></i>
+                        </div>
+                    </div>
+                    <h5 class="text-center mb-1">{{ user.username }}</h5>
+                    <p class="text-center text-muted mb-3">{{ user.email|default:"未设置邮箱" }}</p>
+                    <hr>
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <div class="text-primary fw-bold">{{ user.date_joined|date:"Y-m-d" }}</div>
+                            <small class="text-muted">注册时间</small>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-success fw-bold">{{ user.last_login|date:"Y-m-d"|default:"从未" }}</div>
+                            <small class="text-muted">最后登录</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a href="{% url 'web:profile' %}" class="btn btn-outline-primary btn-sm w-100">
+                        <i class="bi bi-pencil me-1"></i>
+                        编辑资料
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 快速操作 -->
+        <div class="col-lg-8">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-lightning-fill me-2"></i>
+                        快速操作
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="quick-action-card text-center p-3 border rounded">
+                                <i class="bi bi-key" style="font-size: 2rem; color: #0d6efd;"></i>
+                                <h6 class="mt-2 mb-1">API密钥</h6>
+                                <small class="text-muted">管理您的API访问密钥</small>
+                                <div class="mt-2">
+                                    <button class="btn btn-sm btn-outline-primary">查看</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="quick-action-card text-center p-3 border rounded">
+                                <i class="bi bi-graph-up" style="font-size: 2rem; color: #198754;"></i>
+                                <h6 class="mt-2 mb-1">使用统计</h6>
+                                <small class="text-muted">查看API使用统计</small>
+                                <div class="mt-2">
+                                    <button class="btn btn-sm btn-outline-success">分析</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="quick-action-card text-center p-3 border rounded">
+                                <i class="bi bi-gear" style="font-size: 2rem; color: #6c757d;"></i>
+                                <h6 class="mt-2 mb-1">设置</h6>
+                                <small class="text-muted">账户和应用设置</small>
+                                <div class="mt-2">
+                                    <a href="{% url 'web:settings' %}" class="btn btn-sm btn-outline-secondary">配置</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 最近活动 -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-clock-history me-2"></i>
+                        最近活动
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center py-5">
+                        <i class="bi bi-inbox" style="font-size: 3rem; color: #6c757d;"></i>
+                        <p class="text-muted mt-3">暂无最近活动记录</p>
+                        <small class="text-muted">您的操作记录将显示在这里</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.quick-action-card {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.quick-action-card:hover {
+    background-color: #f8f9fa;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.avatar-placeholder {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: #e9ecef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.card-header {
+    background-color: transparent;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.breadcrumb {
+    background-color: transparent;
+    padding: 0;
+    margin-bottom: 1rem;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    content: "›";
+    color: #6c757d;
+}
+</style>
+{% endblock %}

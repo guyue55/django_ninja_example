@@ -1,0 +1,262 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}个人资料 - Django Ninja Web应用{% endblock %}
+
+{% block content %}
+<div class="container mt-5 pt-5">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">
+                <i class="bi bi-person-circle me-2"></i>
+                个人资料
+            </h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'web:home' %}">首页</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'web:dashboard' %}">控制台</a></li>
+                    <li class="breadcrumb-item active">个人资料</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-person-lines-fill me-2"></i>
+                        基本信息
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form id="profileForm">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="username" class="form-label">
+                                        <i class="bi bi-person me-1"></i>
+                                        用户名
+                                    </label>
+                                    <input type="text" class="form-control" id="username" value="{{ user.username }}" disabled>
+                                    <div class="form-text">用户名不可更改</div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">
+                                        <i class="bi bi-envelope me-1"></i>
+                                        邮箱地址
+                                    </label>
+                                    <input type="email" class="form-control" id="email" value="{{ user.email|default:'' }}" placeholder="请输入邮箱地址">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="firstName" class="form-label">
+                                        <i class="bi bi-person-badge me-1"></i>
+                                        名
+                                    </label>
+                                    <input type="text" class="form-control" id="firstName" value="{{ user.first_name|default:'' }}" placeholder="请输入名字">
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="lastName" class="form-label">
+                                        <i class="bi bi-person-badge me-1"></i>
+                                        姓
+                                    </label>
+                                    <input type="text" class="form-control" id="lastName" value="{{ user.last_name|default:'' }}" placeholder="请输入姓氏">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="bio" class="form-label">
+                                <i class="bi bi-card-text me-1"></i>
+                                个人简介
+                            </label>
+                            <textarea class="form-control" id="bio" rows="3" placeholder="介绍一下自己...">{{ user.profile.bio|default:'' }}</textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle me-1"></i>
+                            保存更改
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-image me-2"></i>
+                        头像
+                    </h5>
+                </div>
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <div class="avatar-preview" id="avatarPreview">
+                            <i class="bi bi-person-fill" style="font-size: 4rem; color: #6c757d;"></i>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <input type="file" class="form-control" id="avatarInput" accept="image/*" style="display: none;">
+                        <button type="button" class="btn btn-outline-primary btn-sm" onclick="document.getElementById('avatarInput').click();">
+                            <i class="bi bi-upload me-1"></i>
+                            上传头像
+                        </button>
+                    </div>
+                    <small class="text-muted">支持 JPG、PNG 格式，最大 2MB</small>
+                </div>
+            </div>
+            
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-shield-lock me-2"></i>
+                        账户安全
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <small class="text-muted">上次修改密码</small>
+                        <div class="fw-bold">{{ user.date_joined|date:"Y年m月d日" }}</div>
+                    </div>
+                    <a href="{% url 'web:password_reset' %}" class="btn btn-outline-warning btn-sm w-100">
+                        <i class="bi bi-key me-1"></i>
+                        修改密码
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+/**
+ * 个人资料页面JavaScript
+ */
+
+document.addEventListener('DOMContentLoaded', function() {
+    // 表单提交处理
+    const profileForm = document.getElementById('profileForm');
+    if (profileForm) {
+        profileForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitButton = this.querySelector('button[type="submit"]');
+            const originalText = submitButton.innerHTML;
+            
+            // 显示加载状态
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>保存中...';
+            
+            try {
+                const formData = new FormData(this);
+                const data = {
+                    email: document.getElementById('email').value,
+                    first_name: document.getElementById('firstName').value,
+                    last_name: document.getElementById('lastName').value,
+                    bio: document.getElementById('bio').value
+                };
+                
+                // 这里可以添加API调用逻辑
+                console.log('保存个人资料:', data);
+                
+                // 模拟API调用
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                showNotification('个人资料已更新', 'success');
+                
+            } catch (error) {
+                console.error('更新失败:', error);
+                showNotification('更新失败，请重试', 'error');
+            } finally {
+                submitButton.disabled = false;
+                submitButton.innerHTML = originalText;
+            }
+        });
+    }
+    
+    // 头像上传处理
+    const avatarInput = document.getElementById('avatarInput');
+    if (avatarInput) {
+        avatarInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                if (file.size > 2 * 1024 * 1024) {
+                    showNotification('头像文件大小不能超过2MB', 'error');
+                    return;
+                }
+                
+                if (!file.type.startsWith('image/')) {
+                    showNotification('请选择图片文件', 'error');
+                    return;
+                }
+                
+                // 预览头像
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const avatarPreview = document.getElementById('avatarPreview');
+                    avatarPreview.innerHTML = `<img src="${e.target.result}" class="rounded-circle" style="width: 100%; height: 100%; object-fit: cover;">`;
+                };
+                reader.readAsDataURL(file);
+                
+                // 这里可以添加上传逻辑
+                console.log('上传头像:', file.name);
+            }
+        });
+    }
+});
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.avatar-preview {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background-color: #e9ecef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    overflow: hidden;
+}
+
+.form-label {
+    font-weight: 500;
+    color: #495057;
+}
+
+.card-header {
+    background-color: transparent;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.breadcrumb {
+    background-color: transparent;
+    padding: 0;
+    margin-bottom: 1rem;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    content: "›";
+    color: #6c757d;
+}
+</style>
+{% endblock %}

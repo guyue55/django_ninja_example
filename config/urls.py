@@ -16,6 +16,9 @@ urlpatterns = [
     # Django 管理后台
     path('admin/', admin.site.urls),
     
+    # Web界面页面
+    path('', include(('apps.web.urls', 'web'), namespace='web')),
+    
     # Ninja API 接口
     path('api/', api.urls),
 ]

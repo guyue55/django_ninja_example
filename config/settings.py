@@ -57,6 +57,7 @@ LOCAL_APPS = [
     'apps.authentication',  # 认证应用（重命名避免与Django内置auth冲突）
     'apps.users',  # 用户管理应用
     'apps.api',  # API 应用
+    'apps.web',   # Web界面应用
 ]
 
 # 合并所有应用

@@ -1,0 +1,466 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}用户登录 - Django Ninja Web应用{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* 登录页面特定样式 */
+    .login-background {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+    
+    .login-container {
+        width: 100%;
+        max-width: 400px;
+    }
+    
+    .login-card {
+        background: white;
+        border-radius: 1rem;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        animation: fadeInUp 0.6s ease-out;
+    }
+    
+    .login-header {
+        background: linear-gradient(135deg, #0d6efd, #0056b3);
+        color: white;
+        padding: 2rem;
+        text-align: center;
+    }
+    
+    .login-header h2 {
+        margin: 0;
+        font-weight: 600;
+        font-size: 1.5rem;
+    }
+    
+    .login-header p {
+        margin: 0.5rem 0 0 0;
+        opacity: 0.9;
+        font-size: 0.9rem;
+    }
+    
+    .login-body {
+        padding: 2rem;
+    }
+    
+    .form-floating {
+        margin-bottom: 1rem;
+    }
+    
+    .form-floating .form-control {
+        border-radius: 0.5rem;
+        border: 1px solid #dee2e6;
+        transition: all 0.3s ease;
+    }
+    
+    .form-floating .form-control:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    }
+    
+    .password-toggle {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: #6c757d;
+        cursor: pointer;
+        padding: 5px;
+        border-radius: 0.25rem;
+        transition: color 0.3s ease;
+    }
+    
+    .password-toggle:hover {
+        color: #0d6efd;
+    }
+    
+    .login-options {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        font-size: 0.875rem;
+    }
+    
+    .remember-me {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .forgot-password {
+        color: #0d6efd;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+    
+    .forgot-password:hover {
+        color: #0056b3;
+        text-decoration: underline;
+    }
+    
+    .login-btn {
+        width: 100%;
+        padding: 0.75rem;
+        font-weight: 600;
+        border-radius: 0.5rem;
+        background: linear-gradient(135deg, #0d6efd, #0056b3);
+        border: none;
+        transition: all 0.3s ease;
+    }
+    
+    .login-btn:hover {
+        background: linear-gradient(135deg, #0056b3, #0d6efd);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    
+    .login-btn:disabled {
+        opacity: 0.7;
+        transform: none;
+        box-shadow: none;
+    }
+    
+    .login-footer {
+        text-align: center;
+        padding: 1.5rem 2rem;
+        background-color: #f8f9fa;
+        border-top: 1px solid #dee2e6;
+    }
+    
+    .login-footer p {
+        margin: 0;
+        font-size: 0.875rem;
+        color: #6c757d;
+    }
+    
+    .register-link {
+        color: #0d6efd;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s ease;
+    }
+    
+    .register-link:hover {
+        color: #0056b3;
+        text-decoration: underline;
+    }
+    
+    .error-message {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+        border-radius: 0.5rem;
+        padding: 0.75rem 1rem;
+        margin-bottom: 1rem;
+        font-size: 0.875rem;
+        display: none;
+    }
+    
+    .error-message.show {
+        display: block;
+        animation: fadeIn 0.3s ease;
+    }
+    
+    .loading-spinner {
+        display: none;
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+    
+    .loading-spinner.show {
+        display: block;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* 响应式设计 */
+    @media (max-width: 576px) {
+        .login-header,
+        .login-body {
+            padding: 1.5rem;
+        }
+        
+        .hero-title {
+            font-size: 1.75rem;
+        }
+        
+        .login-container {
+            padding: 10px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="login-background">
+    <div class="login-container">
+        <div class="login-card">
+            <!-- 登录头部 -->
+            <div class="login-header">
+                <h2><i class="bi bi-box-arrow-in-right me-2"></i>欢迎回来</h2>
+                <p>请登录您的账户以继续</p>
+            </div>
+            
+            <!-- 登录主体 -->
+            <div class="login-body">
+                <!-- 错误消息 -->
+                <div id="errorMessage" class="error-message" role="alert" aria-live="polite"></div>
+                
+                <!-- 加载状态 -->
+                <div id="loadingSpinner" class="loading-spinner" role="status" aria-live="polite" aria-busy="true">
+                    <div class="spinner-border text-primary">
+                        <span class="visually-hidden">登录中...</span>
+                    </div>
+                    <p class="mt-2 text-muted">正在验证您的身份...</p>
+                </div>
+                
+                <!-- 登录表单 -->
+                <form id="loginForm" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    
+                    <!-- 用户名/邮箱 -->
+                    <div class="form-floating" aria-label="用户名输入组">
+                        <input type="text" 
+                               class="form-control" 
+                               id="username" 
+                               name="username"
+                               placeholder="用户名或邮箱" 
+                               required
+                               autocomplete="username">
+                        <label for="username">
+                            <i class="bi bi-person me-1"></i>
+                            用户名或邮箱
+                        </label>
+                        <div class="invalid-feedback">
+                            请输入用户名或邮箱地址
+                        </div>
+                    </div>
+                    
+                    <!-- 密码 -->
+                    <div class="form-floating position-relative" aria-label="密码输入组">
+                        <input type="password" 
+                               class="form-control" 
+                               id="password" 
+                               name="password"
+                               placeholder="密码" 
+                               required
+                               autocomplete="current-password"
+                               minlength="6">
+                        <label for="password">
+                            <i class="bi bi-lock me-1"></i>
+                            密码
+                        </label>
+                        <button type="button" 
+                                class="password-toggle" 
+                                data-target="#password"
+                                title="显示/隐藏密码">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                        <div class="invalid-feedback">
+                            密码长度至少为6个字符
+                        </div>
+                    </div>
+                    
+                    <!-- 登录选项 -->
+                    <div class="login-options">
+                        <div class="remember-me">
+                            <input type="checkbox" class="form-check-input" id="rememberMe" name="remember_me">
+                            <label class="form-check-label" for="rememberMe">
+                                记住我
+                            </label>
+                        </div>
+                        <a href="{% url 'web:password_reset' %}" class="forgot-password">
+                            忘记密码？
+                        </a>
+                    </div>
+                    
+                    <!-- 登录按钮 -->
+                    <button type="submit" class="btn btn-primary login-btn" id="loginButton">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>
+                        登录
+                    </button>
+                </form>
+                
+                <!-- 第三方登录 -->
+                <div class="mt-4">
+                    <div class="position-relative">
+                        <hr>
+                        <div class="position-absolute top-50 start-50 translate-middle bg-white px-3 text-muted" style="font-size: 0.875rem;">
+                            或使用其他方式登录
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-center gap-2 mt-3">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" title="GitHub登录">
+                            <i class="bi bi-github"></i>
+                        </button>
+                        <button type="button" class="btn btn-outline-primary btn-sm" title="Google登录">
+                            <i class="bi bi-google"></i>
+                        </button>
+                        <button type="button" class="btn btn-outline-info btn-sm" title="微信登录">
+                            <i class="bi bi-wechat"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 登录底部 -->
+            <div class="login-footer">
+                <p>
+                    还没有账户？
+                    <a href="{% url 'web:register' %}" class="register-link">
+                        立即注册
+                    </a>
+                </p>
+            </div>
+        </div>
+        
+        <!-- 版权信息 -->
+        <div class="text-center mt-4 text-white-50">
+            <small>&copy; 2024 Django Ninja Web应用</small>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+/**
+ * 登录页面特定JavaScript
+ */
+
+/**
+ * 处理登录表单提交
+ */
+document.getElementById('loginForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const form = this;
+    const submitButton = document.getElementById('loginButton');
+    const errorMessage = document.getElementById('errorMessage');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    
+    // 隐藏之前的错误消息
+    errorMessage.classList.remove('show');
+    
+    // 验证表单
+    if (!form.checkValidity()) {
+        form.classList.add('was-validated');
+        return;
+    }
+    
+    // 显示加载状态
+    loadingSpinner.classList.add('show');
+    submitButton.disabled = true;
+    
+    try {
+        // 获取表单数据
+        const formData = new FormData(form);
+        const data = {
+            username: formData.get('username'),
+            password: formData.get('password'),
+            remember_me: formData.get('remember_me') === 'on'
+        };
+        
+        // 发送到API
+        const response = await fetch('/api/auth/login/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify(data)
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+            // 登录成功
+            showNotification('登录成功！正在跳转...', 'success');
+            
+            // 保存记住我状态
+            if (data.remember_me) {
+                localStorage.setItem('rememberMe', 'true');
+                localStorage.setItem('rememberedUsername', data.username);
+            } else {
+                localStorage.removeItem('rememberMe');
+                localStorage.removeItem('rememberedUsername');
+            }
+            
+            // 保存token到localStorage
+            if (result.access_token) {
+                localStorage.setItem('accessToken', result.access_token);
+                localStorage.setItem('refreshToken', result.refresh_token);
+            }
+            
+            // 跳转到首页或指定的返回页面
+            setTimeout(() => {
+                const returnUrl = new URLSearchParams(window.location.search).get('next');
+                window.location.href = returnUrl || '{% url "web:home" %}';
+            }, 1000);
+            
+        } else {
+            // 登录失败
+            errorMessage.textContent = result.detail || result.message || '登录失败，请检查用户名和密码';
+            errorMessage.classList.add('show');
+            submitButton.disabled = false;
+        }
+        
+    } catch (error) {
+        console.error('登录错误:', error);
+        errorMessage.textContent = '网络错误，请稍后重试';
+        errorMessage.classList.add('show');
+        submitButton.disabled = false;
+    } finally {
+        loadingSpinner.classList.remove('show');
+    }
+});
+
+/**
+ * 获取Cookie值
+ */
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) {
+        return parts.pop().split(';').shift();
+    }
+    return '';
+}
+
+/**
+ * 页面加载时恢复记住我状态
+ */
+document.addEventListener('DOMContentLoaded', function() {
+    const rememberMeCheckbox = document.getElementById('rememberMe');
+    const usernameField = document.getElementById('username');
+    
+    if (rememberMeCheckbox && localStorage.getItem('rememberMe') === 'true') {
+        rememberMeCheckbox.checked = true;
+        const rememberedUsername = localStorage.getItem('rememberedUsername');
+        if (rememberedUsername && usernameField) {
+            usernameField.value = rememberedUsername;
+        }
+    }
+});
+</script>
+{% endblock %}
