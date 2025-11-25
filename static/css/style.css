@@ -33,7 +33,7 @@ body {
   background-color: #ffffff;
   margin: 0;
   padding: 0;
-  padding-top: 64px;
+  padding-top: 56px;
 }
 
 /* 导航栏样式 */
@@ -200,6 +200,87 @@ body {
 
 @media (max-width: 991.98px) {
   .navbar-toggler { display: inline-flex; align-items: center; justify-content: center; }
+}
+
+/* 新导航样式 */
+.app-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  background: linear-gradient(135deg, var(--primary-color), #0056b3);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  z-index: 1030;
+}
+.app-navbar.app-navbar--scrolled { background: linear-gradient(135deg, #0b5ed7, #004a9a); box-shadow: 0 4px 14px rgba(0,0,0,0.18); }
+.app-navbar__container {
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 16px;
+  max-width: 1240px;
+}
+.app-navbar__brand {
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: #fff;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.app-navbar__toggler {
+  border: 1px solid rgba(255,255,255,0.5);
+  background: transparent;
+  color: #fff;
+  width: 40px;
+  height: 32px;
+  border-radius: 4px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+.app-navbar__toggler-bar {
+  display: block;
+  width: 18px;
+  height: 2px;
+  background-color: #fff;
+}
+.app-navbar__toggler-bar + .app-navbar__toggler-bar { margin-top: 4px; }
+.app-navbar__menu { display: grid; grid-template-columns: auto 1fr auto; align-items: center; width: 100%; }
+.app-navbar__links { display: flex; gap: 20px; list-style: none; margin: 0; padding: 0; align-items: center; flex-wrap: nowrap; justify-self: start; }
+.app-navbar__actions { justify-self: end; display: inline-flex; align-items: center; gap: 12px; }
+.app-navbar__link { color: #e9ecef; text-decoration: none; padding: 0 18px; height: 56px; line-height: 56px; display: inline-flex; align-items: center; font-size: .95rem; font-weight: 500; position: relative; transition: color .2s ease; border-radius: 6px; }
+.app-navbar__link:hover, .app-navbar__link.is-active { color: #fff; }
+.app-navbar__link::after { content: ""; position: absolute; left: 18px; right: 18px; bottom: 0; height: 2px; background: transparent; border-radius: 2px; transition: background .2s ease, transform .2s ease; transform: scaleX(0); }
+.app-navbar__link:hover::after { background: rgba(255,255,255,0.6); transform: scaleX(1); }
+.app-navbar__link.is-active::after { background: #fff; transform: scaleX(1); }
+.app-navbar__actions { display: inline-flex; align-items: center; gap: 12px; }
+.app-navbar__button { border: 1px solid rgba(255,255,255,0.35); color: #fff; padding: 0 16px; height: 40px; display: inline-flex; align-items: center; border-radius: 8px; text-decoration: none; background: rgba(255,255,255,0.12); backdrop-filter: saturate(120%); transition: background .2s ease, box-shadow .2s ease; }
+.app-navbar__button:hover { background: rgba(255,255,255,0.22); box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+.app-navbar__button:focus-visible { outline: 2px solid rgba(255,255,255,0.6); outline-offset: 2px; }
+.app-navbar__link:focus-visible { outline: 2px solid rgba(255,255,255,0.6); outline-offset: 2px; border-radius: 6px; }
+.app-dropdown { position: relative; }
+.app-dropdown__toggle { color: #e9ecef; text-decoration: none; padding: 0 12px; height: 32px; display: inline-flex; align-items: center; }
+.app-dropdown__menu { position: absolute; right: 0; top: 100%; background: #fff; color: #212529; border-radius: 8px; box-shadow: 0 10px 20px rgba(0,0,0,0.15); padding: 8px 0; min-width: 160px; display: none; }
+.app-dropdown__menu.is-open { display: block; }
+.app-dropdown__item { display: block; padding: 8px 16px; color: #212529; text-decoration: none; }
+.app-dropdown__item:hover { background: #f8f9fa; }
+.app-dropdown__divider { margin: 6px 0; border: 0; border-top: 1px solid #eee; }
+
+@media (min-width: 992px) {
+  .app-navbar__toggler { display: none; }
+  .app-navbar__menu { display: grid !important; }
+}
+@media (max-width: 991.98px) {
+  .app-navbar__toggler { display: inline-flex; }
+  .app-navbar__menu { display: none; position: absolute; left: 0; right: 0; top: 56px; background: linear-gradient(135deg, var(--primary-color), #0056b3); padding: 12px 20px; grid-template-columns: 1fr; }
+  .app-navbar__menu.is-open { display: block; }
+  .app-navbar__links { flex-direction: column; gap: 8px; justify-self: start; }
+  .app-navbar__link { height: 40px; line-height: 40px; padding: 0 16px; }
+  .app-navbar__actions { margin-top: 8px; justify-self: start; }
 }
 
 /* 卡片样式 */
