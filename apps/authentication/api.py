@@ -9,6 +9,8 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth import login as django_login
+from django.contrib.auth import logout as django_logout
 from django.utils.decorators import method_decorator
 from datetime import datetime
 import logging
@@ -64,6 +66,12 @@ def login(request, login_data: LoginRequest):
         
         # 生成令牌
         token_data = AuthService.generate_tokens(user)
+        
+        # 建立Django会话登录（用于模板中的 user.is_authenticated）
+        try:
+            django_login(request, user)
+        except Exception:
+            pass
         
         # 更新最后登录IP
         ip_address = request.META.get('REMOTE_ADDR')
@@ -145,6 +153,10 @@ def logout(request, logout_data: LogoutRequest):
             # 执行登出操作
             refresh_token = logout_data.refresh_token if logout_data.refresh_token else None
             AuthService.logout_user(user_id, refresh_token)
+            try:
+                django_logout(request)
+            except Exception:
+                pass
             logger.info(f"用户登出成功: {user_id}")
         
         return LogoutResponse(message="登出成功")
