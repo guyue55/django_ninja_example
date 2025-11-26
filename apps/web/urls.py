@@ -14,7 +14,7 @@ urlpatterns = [
     
     # 认证相关页面
     path('login/', views.login_view, name='login'),
-    path('register/', views.login_view, name='register'),  # 暂时使用登录页面作为注册页面
+    path('register/', views.register_view, name='register'),
     path('logout/', views.logout_view, name='logout'),     # 退出登录
     
     # 用户相关页面（需要登录）

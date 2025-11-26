@@ -188,3 +188,17 @@ def error_500_view(request: HttpRequest) -> HttpResponse:
     response = render(request, 'error.html', context)
     response.status_code = 500
     return response
+
+
+def register_view(request: HttpRequest) -> HttpResponse:
+    try:
+        if request.user.is_authenticated:
+            return redirect('web:home')
+        context = {
+            'title': '用户注册',
+        }
+        logger.info("用户访问注册页面")
+        return render(request, 'register.html', context)
+    except Exception as e:
+        logger.error(f"注册页面视图渲染错误: {str(e)}")
+        raise
