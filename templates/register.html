@@ -6,7 +6,7 @@
 {% block content %}
 <div class="auth-background">
     <div class="auth-container">
-        <div class="auth-card">
+        <div class="auth-card fade-in-up">
             <div class="auth-header">
                 <h2>创建账户</h2>
                 <p>填写信息并加入我们</p>
@@ -64,7 +64,7 @@ document.getElementById('registerForm').addEventListener('submit', async functio
         form.classList.add('was-validated');
         return;
     }
-    submitButton.disabled = true;
+    setLoadingState(submitButton, true);
     try {
         const formData = new FormData(form);
         const payload = {
@@ -93,12 +93,15 @@ document.getElementById('registerForm').addEventListener('submit', async functio
                 errorMessage.textContent = detail;
             }
             errorMessage.classList.add('show');
-            submitButton.disabled = false;
+            setLoadingState(submitButton, false);
         }
     } catch (err) {
         errorMessage.textContent = '网络错误，请稍后重试';
         errorMessage.classList.add('show');
-        submitButton.disabled = false;
+        setLoadingState(submitButton, false);
+    }
+    finally {
+        setLoadingState(submitButton, false);
     }
 });
 </script>

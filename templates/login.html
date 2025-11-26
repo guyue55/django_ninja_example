@@ -8,7 +8,7 @@
 {% block content %}
 <div class="auth-background">
     <div class="auth-container">
-        <div class="auth-card">
+        <div class="auth-card fade-in-up">
             <div class="auth-header">
                 <h2>欢迎回来</h2>
                 <p>请登录您的账户以继续</p>
@@ -17,12 +17,7 @@
             <div class="auth-body">
                 <div id="errorMessage" class="error-message" role="alert" aria-live="polite"></div>
                 
-                <div id="loadingSpinner" class="loading-spinner" role="status" aria-live="polite" aria-busy="true">
-                    <div class="spinner-border text-primary">
-                        <span class="visually-hidden">登录中...</span>
-                    </div>
-                    <p class="mt-2 text-muted">正在验证您的身份...</p>
-                </div>
+                
                 
                 <form id="loginForm" class="needs-validation" novalidate>
                     {% csrf_token %}
@@ -122,7 +117,7 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
     const form = this;
     const submitButton = document.getElementById('loginButton');
     const errorMessage = document.getElementById('errorMessage');
-    const loadingSpinner = document.getElementById('loadingSpinner');
+    
     
     // 隐藏之前的错误消息
     errorMessage.classList.remove('show');
@@ -133,9 +128,7 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
         return;
     }
     
-    // 显示加载状态
-    loadingSpinner.classList.add('show');
-    submitButton.disabled = true;
+    setLoadingState(submitButton, true);
     
     try {
         // 获取表单数据
@@ -187,16 +180,16 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
             // 登录失败
             errorMessage.textContent = result.detail || result.message || '登录失败，请检查用户名和密码';
             errorMessage.classList.add('show');
-            submitButton.disabled = false;
+            setLoadingState(submitButton, false);
         }
         
     } catch (error) {
         console.error('登录错误:', error);
         errorMessage.textContent = '网络错误，请稍后重试';
         errorMessage.classList.add('show');
-        submitButton.disabled = false;
+        setLoadingState(submitButton, false);
     } finally {
-        loadingSpinner.classList.remove('show');
+        setLoadingState(submitButton, false);
     }
 });
 

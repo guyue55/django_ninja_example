@@ -82,7 +82,7 @@ def login(request, login_data: LoginRequest):
     except ValidationError:
         raise
     except Exception as e:
-        logger.error(f"用户登录失败: {e}")
+        logger.error(f"用户登录失败: {e}", exc_info=True)
         raise ValidationError("登录失败，请稍后重试")
 
 

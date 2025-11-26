@@ -186,13 +186,18 @@ if TESTING:
         }
     }
 else:
-    # 生产环境使用Redis缓存
     CACHES = {
         'default': {
-            'BACKEND': 'django.core.cache.backends.redis.RedisCache',
-            'LOCATION': config('REDIS_URL', default='redis://127.0.0.1:6379/1'),
+            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
         }
     }
+    # # 生产环境使用Redis缓存
+    # CACHES = {
+    #     'default': {
+    #         'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+    #         'LOCATION': config('REDIS_URL', default='redis://127.0.0.1:6379/1'),
+    #     }
+    # }
 
 # 日志配置
 LOGGING = {

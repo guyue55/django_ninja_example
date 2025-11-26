@@ -359,7 +359,7 @@ body {
 
 .form-control:focus {
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+  box-shadow: 0 0 0 0.15rem rgba(13, 110, 253, 0.18);
 }
 
 .form-floating .form-control::placeholder { color: transparent; }
@@ -585,3 +585,5 @@ body {
     border: 1px solid #dee2e6 !important;
   }
 }
+.form-floating > .form-control,
+.form-floating > label { transition: all .2s ease; }
