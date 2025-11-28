@@ -190,7 +190,10 @@ function initializeDropdowns() {
         document.addEventListener('click', function(e) {
             if (!e.target.closest('.app-dropdown')) {
                 document.querySelectorAll('.app-dropdown__menu.is-open').forEach(m => m.classList.remove('is-open'));
-                toggle.setAttribute('aria-expanded', 'false');
+                const userDropdownToggle = document.getElementById('userDropdownToggle');
+                if (userDropdownToggle) {
+                    userDropdownToggle.setAttribute('aria-expanded', 'false');
+                }
             }
         });
     }
@@ -376,7 +379,7 @@ function createNotificationContainer() {
     container.className = 'notification-container';
     container.style.cssText = `
         position: fixed;
-        top: 20px;
+        top: 70px;
         right: 20px;
         z-index: 1050;
         max-width: 300px;
@@ -477,4 +480,54 @@ function throttle(func, limit) {
             setTimeout(() => inThrottle = false, limit);
         }
     };
+}
+
+function extractErrorMessage(res) {
+    if (!res) return '请求失败';
+    if (typeof res === 'string') return res;
+    if (typeof res.message === 'string' && res.message) return res.message;
+    const d = res.detail;
+    if (typeof d === 'string' && d) return d;
+    if (Array.isArray(d) && d.length) {
+        const first = d[0];
+        if (typeof first === 'string') return first;
+        if (typeof first === 'object') {
+            if (typeof first.msg === 'string' && first.msg) return first.msg;
+            if (typeof first.message === 'string' && first.message) return first.message;
+        }
+        const msgs = d.map(item => {
+            if (typeof item === 'string') return item;
+            if (item && typeof item.msg === 'string') return item.msg;
+            if (item && typeof item.message === 'string') return item.message;
+            return '';
+        }).filter(Boolean);
+        if (msgs.length) return msgs.join('；');
+    }
+    const errs = res.errors;
+    if (Array.isArray(errs) && errs.length) {
+        const e0 = errs[0];
+        if (typeof e0 === 'string') return e0;
+        if (e0 && typeof e0.message === 'string') return e0.message;
+        return errs.filter(x => typeof x === 'string').join('；') || '操作失败';
+    }
+    if (d && typeof d === 'object') {
+        if (typeof d.msg === 'string' && d.msg) return d.msg;
+        if (typeof d.message === 'string' && d.message) return d.message;
+    }
+    if (typeof res.error === 'string' && res.error) {
+        const m = typeof res.message === 'string' ? res.message : '';
+        return m ? `${res.error}: ${m}` : res.error;
+    }
+    return '操作失败，请稍后重试';
+}
+
+// 确保在DOM加载完成后初始化
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeApp);
+} else {
+    initializeApp();
+}
+
+function initializeApp() {
+    console.log('初始化应用...');
 }

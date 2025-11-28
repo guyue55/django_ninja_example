@@ -150,6 +150,47 @@
  * 个人资料页面JavaScript
  */
 
+/**
+ * 显示通知消息
+ */
+function showNotification(message, type = 'info') {
+    // 移除现有的通知
+    const existingNotification = document.querySelector('#notificationContainer .alert');
+    if (existingNotification) {
+        existingNotification.remove();
+    }
+    
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type === 'error' ? 'danger' : type === 'success' ? 'success' : type} alert-dismissible fade show`;
+    notification.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 1050; min-width: 250px;';
+    notification.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+    
+    document.getElementById('notificationContainer').appendChild(notification);
+    
+    // 自动移除
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.classList.remove('show');
+            setTimeout(() => notification.remove(), 150);
+        }
+    }, 3000);
+}
+
+/**
+ * 获取Cookie值
+ */
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) {
+        return parts.pop().split(';').shift();
+    }
+    return '';
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     // 表单提交处理
     const profileForm = document.getElementById('profileForm');
@@ -162,10 +203,9 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // 显示加载状态
             submitButton.disabled = true;
-            submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>保存中...';
+            submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>保存中...';
             
             try {
-                const formData = new FormData(this);
                 const data = {
                     email: document.getElementById('email').value,
                     first_name: document.getElementById('firstName').value,
@@ -173,17 +213,33 @@ document.addEventListener('DOMContentLoaded', function() {
                     bio: document.getElementById('bio').value
                 };
                 
-                // 这里可以添加API调用逻辑
-                console.log('保存个人资料:', data);
+                // 发送到API更新用户信息
+                const response = await fetch('/api/users/me', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify(data)
+                });
                 
-                // 模拟API调用
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                
-                showNotification('个人资料已更新', 'success');
+                if (response.ok) {
+                    showNotification('个人资料已更新', 'success');
+                } else {
+                    const result = await response.json();
+                    let errorMsg = '更新失败，请重试';
+                    if (result.detail) {
+                        errorMsg = result.detail;
+                    } else if (result.message) {
+                        errorMsg = result.message;
+                    }
+                    showNotification(errorMsg, 'error');
+                }
                 
             } catch (error) {
                 console.error('更新失败:', error);
-                showNotification('更新失败，请重试', 'error');
+                showNotification('网络错误，请重试', 'error');
             } finally {
                 submitButton.disabled = false;
                 submitButton.innerHTML = originalText;
@@ -216,7 +272,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 reader.readAsDataURL(file);
                 
                 // 这里可以添加上传逻辑
-                console.log('上传头像:', file.name);
+                showNotification('头像上传功能将在后续版本中实现', 'info');
             }
         });
     }
@@ -257,6 +313,16 @@ document.addEventListener('DOMContentLoaded', function() {
 .breadcrumb-item + .breadcrumb-item::before {
     content: "›";
     color: #6c757d;
+}
+
+.btn-outline-warning {
+    color: #ffc107;
+    border-color: #ffc107;
+}
+
+.btn-outline-warning:hover {
+    background-color: #ffc107;
+    border-color: #ffc107;
 }
 </style>
 {% endblock %}

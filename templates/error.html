@@ -132,6 +132,9 @@
 <style>
 .error-container {
     padding: 2rem;
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
 }
 
 .error-code {
@@ -166,6 +169,7 @@
 
 .error-actions .btn {
     min-width: 140px;
+    margin-bottom: 0.5rem;
 }
 
 .error-search {
@@ -199,6 +203,10 @@
     
     .error-actions .btn:last-child {
         margin-bottom: 0;
+    }
+    
+    .error-actions .btn.me-3 {
+        margin-right: 0 !important;
     }
 }
 
@@ -266,15 +274,21 @@ function handleSearch(event) {
  * 显示通知消息
  */
 function showNotification(message, type = 'info') {
+    // 移除现有的通知
+    const existingNotification = document.querySelector('#notificationContainer .alert');
+    if (existingNotification) {
+        existingNotification.remove();
+    }
+    
     const notification = document.createElement('div');
-    notification.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
-    notification.style.cssText = 'top: 20px; right: 20px; z-index: 1050; min-width: 250px;';
+    notification.className = `alert alert-${type} alert-dismissible fade show`;
+    notification.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 1050; min-width: 250px;';
     notification.innerHTML = `
         ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     `;
     
-    document.body.appendChild(notification);
+    document.getElementById('notificationContainer').appendChild(notification);
     
     // 自动移除
     setTimeout(() => {

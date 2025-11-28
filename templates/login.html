@@ -3,7 +3,254 @@
 
 {% block title %}用户登录 - Django Ninja Web应用{% endblock %}
 
-{% block extra_css %}{% endblock %}
+{% block extra_css %}
+<style>
+.auth-background {
+    background: linear-gradient(135deg, #0d6efd 0%, #0056b3 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.auth-container {
+    width: 100%;
+    max-width: 450px;
+}
+
+.auth-card {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.auth-header {
+    padding: 2rem 2rem 1rem;
+    text-align: center;
+    background: #f8f9fa;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.auth-header h2 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #212529;
+    margin-bottom: 0.5rem;
+}
+
+.auth-header p {
+    color: #6c757d;
+    margin-bottom: 0;
+}
+
+.auth-body {
+    padding: 1.5rem 2rem;
+}
+
+.form-floating {
+    margin-bottom: 1.25rem;
+}
+
+.form-floating > label {
+    padding: 0.75rem 0.75rem;
+}
+
+.form-control:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.position-relative .form-control {
+    padding-right: 5rem;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    color: #6c757d;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    cursor: pointer;
+    border-radius: 0.25rem;
+}
+
+.password-toggle:hover {
+    color: #0d6efd;
+    background: rgba(13, 110, 253, 0.1);
+}
+
+.login-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    font-size: 0.875rem;
+}
+
+.remember-me .form-check-label {
+    margin-left: 0.5rem;
+    color: #6c757d;
+}
+
+.forgot-password {
+    color: #0d6efd;
+    text-decoration: none;
+}
+
+.forgot-password:hover {
+    text-decoration: underline;
+}
+
+.auth-btn {
+    display: block;
+    width: 100%;
+    padding: 0.75rem;
+    background: #0d6efd;
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.auth-btn:hover:not(:disabled) {
+    background: #0b5ed7;
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(13, 110, 253, 0.3);
+}
+
+.auth-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.auth-btn .spinner-border {
+    width: 1.2rem;
+    height: 1.2rem;
+    border-width: 0.15em;
+    margin-right: 0.5rem;
+    vertical-align: text-top;
+}
+
+.auth-footer {
+    padding: 1rem 2rem 2rem;
+    text-align: center;
+    background: #f8f9fa;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.register-link {
+    color: #0d6efd;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.register-link:hover {
+    text-decoration: underline;
+}
+
+.error-message {
+    display: none;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+}
+
+.error-message.show {
+    display: block;
+    animation: slideInDown 0.3s ease-out;
+}
+
+.redirect-message {
+    display: none;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    text-align: center;
+}
+
+.redirect-message.show {
+    display: block;
+    animation: slideInDown 0.3s ease-out;
+}
+
+.btn-outline-secondary,
+.btn-outline-primary,
+.btn-outline-info {
+    border-width: 2px;
+}
+
+.btn-outline-secondary:hover {
+    background: #6c757d;
+    border-color: #6c757d;
+}
+
+.btn-outline-primary:hover {
+    background: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.btn-outline-info:hover {
+    background: #0dcaf0;
+    border-color: #0dcaf0;
+}
+
+/* 动画效果 */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 响应式设计 */
+@media (max-width: 576px) {
+    .auth-container {
+        padding: 0.5rem;
+    }
+    
+    .auth-header,
+    .auth-body,
+    .auth-footer {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
+}
+</style>
+{% endblock %}
 
 {% block content %}
 <div class="auth-background">
@@ -16,8 +263,9 @@
             
             <div class="auth-body">
                 <div id="errorMessage" class="error-message" role="alert" aria-live="polite"></div>
-                
-                
+                <div id="redirectMessage" class="redirect-message" role="alert" aria-live="polite">
+                    登录成功！正在跳转到首页...
+                </div>
                 
                 <form id="loginForm" class="needs-validation" novalidate>
                     {% csrf_token %}
@@ -109,6 +357,19 @@
  */
 
 /**
+ * 设置加载状态
+ */
+function setLoadingState(button, loading) {
+    if (loading) {
+        button.disabled = true;
+        button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> 登录中...';
+    } else {
+        button.disabled = false;
+        button.innerHTML = '登录';
+    }
+}
+
+/**
  * 处理登录表单提交
  */
 document.getElementById('loginForm').addEventListener('submit', async function(e) {
@@ -117,10 +378,11 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
     const form = this;
     const submitButton = document.getElementById('loginButton');
     const errorMessage = document.getElementById('errorMessage');
-    
+    const redirectMessage = document.getElementById('redirectMessage');
     
     // 隐藏之前的错误消息
     errorMessage.classList.remove('show');
+    redirectMessage.classList.remove('show');
     
     // 验证表单
     if (!form.checkValidity()) {
@@ -135,8 +397,7 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
         const formData = new FormData(form);
         const data = {
             username: formData.get('username'),
-            password: formData.get('password'),
-            remember_me: formData.get('remember_me') === 'on'
+            password: formData.get('password')
         };
         
         // 发送到API
@@ -153,10 +414,10 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
         
         if (response.ok) {
             // 登录成功
-            showNotification('登录成功！正在跳转...', 'success');
+            redirectMessage.classList.add('show');
             
             // 保存记住我状态
-            if (data.remember_me) {
+            if (formData.get('remember_me') === 'on') {
                 localStorage.setItem('rememberMe', 'true');
                 localStorage.setItem('rememberedUsername', data.username);
             } else {
@@ -168,17 +429,26 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
             if (result.access_token) {
                 localStorage.setItem('accessToken', result.access_token);
                 localStorage.setItem('refreshToken', result.refresh_token);
+                // 设置过期时间（毫秒）
+                const expirationTime = Date.now() + (result.expires_in * 1000);
+                localStorage.setItem('tokenExpiration', expirationTime);
             }
             
             // 跳转到首页或指定的返回页面
             setTimeout(() => {
                 const returnUrl = new URLSearchParams(window.location.search).get('next');
                 window.location.href = returnUrl || '{% url "web:home" %}';
-            }, 1000);
+            }, 1500);
             
         } else {
             // 登录失败
-            errorMessage.textContent = result.detail || result.message || '登录失败，请检查用户名和密码';
+            let errorMsg = '登录失败，请检查用户名和密码';
+            if (result.detail) {
+                errorMsg = result.detail;
+            } else if (result.message) {
+                errorMsg = result.message;
+            }
+            errorMessage.textContent = errorMsg;
             errorMessage.classList.add('show');
             setLoadingState(submitButton, false);
         }
@@ -188,22 +458,22 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
         errorMessage.textContent = '网络错误，请稍后重试';
         errorMessage.classList.add('show');
         setLoadingState(submitButton, false);
-    } finally {
-        setLoadingState(submitButton, false);
     }
 });
 
 /**
- * 获取Cookie值
+ * 切换密码可见性
  */
-function getCookie(name) {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) {
-        return parts.pop().split(';').shift();
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('password-toggle')) {
+        const targetId = e.target.getAttribute('data-target');
+        const passwordField = document.querySelector(targetId);
+        const isVisible = passwordField.type === 'text';
+        
+        passwordField.type = isVisible ? 'password' : 'text';
+        e.target.textContent = isVisible ? '显示' : '隐藏';
     }
-    return '';
-}
+});
 
 /**
  * 页面加载时恢复记住我状态
